@@ -3,13 +3,70 @@
     padding: 0;
     box-sizing:  border-box;
 }
+
+
 body{
     overflow: hidden;
-    background: black;
+    background: "#DCDCDC";
+    /* background: "#F9F6EE"; */
 }
 canvas{
-    background: black;
-    position: relative;
+    background: "#DCDCDC";
+    /* background: "#F9F6EE"; */
+    position: block;
     top: 0;
     left: 0;
+    z-index: 0;
+}
+
+.drop-btn {
+    position: absolute;
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    top: 100px;
+    left: 100px;
+    right: 100px;
+    z-index: 1;
+  }
+
+
+.dropdown-content{
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.overall-page {
+    position: relative;
+}
+
+
+.animation-dropdown {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+}
+
+.music-dropdown {
+    position: absolute;
+    top: 30px;
+    left: 10px;
+    z-index: 1;
+}
+
+.animation-dropdown:hover
+.music-dropdown:hover
+.dropdown-content {display: block;}
+
+
+
+.show {
+    display: block;
 }
