@@ -163,7 +163,7 @@ function heavyRainAnimation(timeStamp) {
         timer += deltaTime;
     }
 
-    requestAnimationFrame(heavyRainAnimation);
+    animationId = requestAnimationFrame(heavyRainAnimation);
 }
 
 
@@ -233,6 +233,14 @@ document.getElementById('thunderstorm-animation').addEventListener('click', func
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     animationId = requestAnimationFrame(rainAnimation);
 });
+
+document.getElementById('heavy-rain-thunderstorm-animation').addEventListener('click', function () {
+    console.log('thunderstorm w/ heavy rain')
+    cancelAnimationFrame(animationId);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    animationId = requestAnimationFrame(heavyRainAnimation)
+});
+
 
 // Event listener for the 'Thunderstorm' button
 document.getElementById('lofi-rain-animation').addEventListener('click', function () {
