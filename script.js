@@ -144,48 +144,125 @@ class HeavyRainDrops {
 
 
 class LightningBolt {
-    constructor(x, y, fontSize, canvasHeight) {
+    constructor(x, y, fontSize, canvasWidth, canvasHeight) {
         this.characters = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンあぁいぃうぅえぇおぉかきくけこさしすせそたちつってとなにぬねのはひふへほまみむめもやゃゆゅよょらりるれろわゐをん0123456789";
         this.x = x;
         this.y = y;
-        this.fontSize = fontSize;
+        this.fontSize = fontSize + 7;
+        this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.finished = false; // To track when the lightning reaches the bottom
-        this.positions = [{ x: this.x, y: this.y }]; // Track the positions of the lightning
+        this.finished = false;
+        this.positions = [{ x: this.x, y: this.y }];
+        this.forks = [];
+        this.forkCount = 0;
+        this.maxForks = 2; // Changed to 3 as per requirement
+        this.minForks = 1;
+        this.lifespan = 2000; // 3 seconds lifespan
+        this.creationTime = Date.now();
+        this.hasForkedEarly = false;
+        this.direction = Math.random() < 0.5 ? -1 : 1; // -1 for left, 1 for right
+        this.directionStrength = Math.random() * 0.5 + 0.5; // Random strength between 0.5 and 1
+        this.symbolFrequency = 0.5; // Adjust this value to change the frequency of symbols (0-1)
     }
 
     draw(context) {
-        if (this.finished) return;
+        if (this.finished && Date.now() - this.creationTime > this.lifespan) return true;
 
-        let lastPos = this.positions[this.positions.length - 1];
-        let nextX = lastPos.x;
-        let nextY = lastPos.y + 2; // Move faster than the rain
+        if (!this.finished) {
+            let lastPos = this.positions[this.positions.length - 1];
+            let nextX = lastPos.x;
+            let nextY = lastPos.y + 1;
 
-        // 1/10 chance to shift left or right
-        if (Math.random() < 0.9) {
-            nextX += (Math.random() < 0.5) ? -1 : 1;
+            // Make the bolt more jagged
+            nextX += (Math.random() - 0.5) * 4 * this.directionStrength;
+
+            // Apply directional trend
+            nextX += this.direction * this.directionStrength;
+
+            // Ensure lightning stays within canvas bounds
+            nextX = Math.max(0, Math.min(nextX, this.canvasWidth / this.fontSize));
+
+            // Check if the bolt has hit the side of the screen
+            if (nextX <= 0 || nextX >= this.canvasWidth / this.fontSize) {
+                //this.finished = true;
+                this.direction = !this.direction
+                return false;
+            }
+
+            // Early forking
+            let earlyForkRegion = this.canvasHeight * 0.4;
+            if (!this.hasForkedEarly && nextY > this.canvasHeight * 0.15 && nextY < earlyForkRegion) {
+                if (Math.random() < 0.1) {
+                    this.forks.push(new LightningBolt(nextX, nextY, this.fontSize - 5, this.canvasWidth, this.canvasHeight));
+                    this.forkCount++;
+                    this.hasForkedEarly = true;
+                }
+            }
+
+            // Regular forking
+            let forkChance = Math.min(0.05 + (nextY / this.canvasHeight) * 0.2, 0.25);
+            if (this.forkCount < this.maxForks && Math.random() < forkChance) {
+                this.forks.push(new LightningBolt(nextX, nextY, this.fontSize - 5, this.canvasWidth, this.canvasHeight));
+                this.forkCount++;
+            }
+
+            this.positions.push({ x: nextX, y: nextY });
+
+            if (nextY * this.fontSize > this.canvasHeight) {
+                if (this.forkCount < this.minForks) {
+                    this.forks.push(new LightningBolt(nextX, nextY - 10, this.fontSize - 5, this.canvasWidth, this.canvasHeight));
+                    this.forkCount++;
+                } else {
+                    this.finished = true;
+                }
+            }
         }
 
-        // 1/20 chance to branch
-        if (Math.random() < 0.05) {
-            this.positions.push({ x: nextX, y: nextY }); // Create the branch
-        }
+        // Draw the main bolt
+        this.drawBolt(context, this.positions);
 
-        this.positions.push({ x: nextX, y: nextY });
+        // Draw forks
+        // this.forks.forEach(fork => fork.draw(context));
 
-        context.fillStyle = this.getLightningGradient(context, nextX * this.fontSize, nextY * this.fontSize);
-        let text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
-        context.fillText(text, nextX * this.fontSize, nextY * this.fontSize);
+        return false;
+    }
 
-        if (nextY * this.fontSize > this.canvasHeight) {
-            this.finished = true;
+    drawBolt(context, positions) {
+        for (let i = 0; i < positions.length - 1; i++) {
+            let pos = positions[i];
+            let nextPos = positions[i + 1];
+
+            //Draw a line between positions
+            context.strokeStyle = this.getLightningGradient(context, pos.x * this.fontSize, pos.y * this.fontSize);
+            context.lineWidth = this.fontSize / 3;
+            context.beginPath();
+            context.moveTo(pos.x * this.fontSize, pos.y * this.fontSize);
+            context.lineTo(nextPos.x * this.fontSize, nextPos.y * this.fontSize);
+            context.stroke();
+
+            // Add symbols along the line
+            let distance = Math.sqrt(Math.pow(nextPos.x - pos.x, 2) + Math.pow(nextPos.y - pos.y, 2));
+            let steps = Math.ceil(distance / this.symbolFrequency);
+
+            for (let j = 0; j < steps; j++) {
+                if (Math.random() < this.symbolFrequency) {
+                    let interpX = pos.x + (nextPos.x - pos.x) * (j / steps);
+                    let interpY = pos.y + (nextPos.y - pos.y) * (j / steps);
+
+                    context.fillStyle = this.getLightningGradient(context, interpX * this.fontSize, interpY * this.fontSize);
+                    context.font = this.fontSize + 'px monospace';
+                    let text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+                    context.fillText(text, interpX * this.fontSize, interpY * this.fontSize);
+                }
+            }
         }
     }
 
     getLightningGradient(context, x, y) {
         let gradient = context.createLinearGradient(x, y, x, y + this.fontSize);
-        gradient.addColorStop(0, '#DAA520');
-        gradient.addColorStop(1, '#D8A444');
+        gradient.addColorStop(1, '#D8A444');  // Metalic Gold
+        //gradient.addColorStop(0.5, '#FFA500'); // Orange
+        //gradient.addColorStop(1, '#DAA520');   // Golden rod
         return gradient;
     }
 }
@@ -217,51 +294,6 @@ function rainAnimation(timeStamp) {
 
     animationId = requestAnimationFrame(rainAnimation);
 }
-
-
-function heavyRainAnimation(timeStamp) {
-    let gradient = createRainGradient();
-
-    const deltaTime = timeStamp - lastTime;
-    lastTime = timeStamp;
-
-    if (timer > nextFrame) {
-        ctx.fillStyle = 'rgba(220,220,220,.2)';
-        ctx.textAlign = 'center';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = gradient;
-        ctx.font = effect.fontSize + 'px monospace';
-
-        effect.symbols.forEach(symbol => {
-            symbol.draw(ctx);
-        });
-
-        // Handle heavy rain drops
-        if (heavyrainTimer > heavyrainCooldown) {
-            HeavyRainDroplets.push(new HeavyRainDrops(Math.floor(Math.random() * effect.columns), 0, effect.fontSize, canvas.height));
-            heavyrainCooldown = Math.random() * 100 + 100; // Reset cooldown
-            heavyrainTimer = 0;
-        } else {
-            heavyrainTimer += deltaTime;
-        }
-
-        // Draw and clean up lightning bolts
-        HeavyRainDroplets.forEach((bolt, index) => {
-            bolt.draw(ctx);
-            if (bolt.finished) {
-                HeavyRainDroplets.splice(index, 1); // Remove finished bolts
-            }
-        });
-
-        timer = 0;
-    } else {
-        timer += deltaTime;
-    }
-
-    animationId = requestAnimationFrame(heavyRainAnimation);
-}
-
-
 
 function heavyRainAnimation(timeStamp) {
     let gradient = createRainGradient();
@@ -304,7 +336,6 @@ function heavyRainAnimation(timeStamp) {
     animationId = requestAnimationFrame(heavyRainAnimation);
 }
 
-
 function lightningAnimation(timeStamp) {
     let gradient = createRainGradient();
 
@@ -322,22 +353,17 @@ function lightningAnimation(timeStamp) {
             symbol.draw(ctx);
         });
 
-        // Handle heavy rain drops
         if (lightningBoltTimer > lightningBoltCooldown) {
-            lightningBolts.push(new LightningBolt(Math.floor(Math.random() * effect.columns), 0, effect.fontSize, canvas.height));
-            lightningBoltCooldown = Math.random() * 50 + 50; // Reset cooldown
+            // Start lightning within 20th and 80th percentile of horizontal space
+            let startX = Math.floor(effect.columns * 0.2 + Math.random() * (effect.columns * 0.6));
+            lightningBolts.push(new LightningBolt(startX, 0, effect.fontSize, canvas.width, canvas.height));
+            lightningBoltCooldown = Math.random() * 1000 + 1000;
             lightningBoltTimer = 0;
         } else {
-            lightningBoltTimer += deltaTime;
+            lightningBoltTimer += deltaTime * 2;
         }
 
-        // Draw and clean up lightning bolts
-        lightningBolts.forEach((bolt, index) => {
-            bolt.draw(ctx);
-            if (bolt.finished) {
-                lightningBolts.splice(index, 1); // Remove finished bolts
-            }
-        });
+        lightningBolts = lightningBolts.filter(bolt => !bolt.draw(ctx));
 
         timer = 0;
     } else {
@@ -346,33 +372,6 @@ function lightningAnimation(timeStamp) {
 
     animationId = requestAnimationFrame(lightningAnimation);
 }
-
-
-function lofiRainAnimation(timeStamp) {
-    let gradient = createLofiRainGradient();
-
-
-    const deltaTime = timeStamp - lastTime;
-    lastTime = timeStamp;
-    if (timer > nextFrame) {
-        ctx.fillStyle = 'rgba(220,220,220,.2)'; // Silver background color
-        ctx.textAlign = 'center'; // Center the text horizontally
-        ctx.fillRect(0, 0, canvas.width, canvas.height); // Clear canvas with slight transparency
-        ctx.fillStyle = gradient;
-        ctx.font = effect.fontSize + 'px monospace';
-
-        effect.symbols.forEach(symbol => {
-            symbol.draw(ctx);
-        });
-
-        timer = 0;
-    } else {
-        timer += deltaTime;
-    }
-
-    animationId = requestAnimationFrame(lofiRainAnimation);
-}
-
 
 
 timer = 0
@@ -385,7 +384,7 @@ let heavyrainTimer = 0;
 let heavyrainCooldown = Math.random() * 25 + 25;
 let lightningBolts = [];
 let lightningBoltTimer = 0;
-let lightningBoltCooldown =  Math.random() * 50 + 50;
+let lightningBoltCooldown =  Math.random() * 750 + 750;
 
 
 
