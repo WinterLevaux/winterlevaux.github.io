@@ -3,14 +3,38 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let gradient = ctx.createLinearGradient(0, canvas.height, canvas.width, 0);
 
-gradient.addColorStop(0, '#F0FFFF');
-gradient.addColorStop(0.2, '#89CFF0');
-gradient.addColorStop(0.4, '#0096FF');
-gradient.addColorStop(0.6, '#6495ED');
-gradient.addColorStop(0.8, '#7393B3');
-gradient.addColorStop(1, '#6082B6');
+
+
+//begin gradient function
+
+function createGradient() {
+    return ctx.createLinearGradient(0, canvas.height, canvas.width, 0);
+}
+
+function createRainGradient() {
+    let gradient = createGradient()
+    gradient.addColorStop(0, '#F0FFFF');
+    gradient.addColorStop(0.2, '#89CFF0');
+    gradient.addColorStop(0.4, '#0096FF');
+    gradient.addColorStop(0.6, '#6495ED');
+    gradient.addColorStop(0.8, '#7393B3');
+    gradient.addColorStop(1, '#6082B6');
+    return gradient;
+}
+
+function createLofiRainGradient() {
+    let gradient = createGradient()
+    gradient.addColorStop(0, '#DC8564');
+    gradient.addColorStop(0.2, '#F4CCCC');
+    gradient.addColorStop(0.4, '#007F87');
+    gradient.addColorStop(0.6, '#885CA4');
+    gradient.addColorStop(0.8, '#BCACD4');
+    gradient.addColorStop(1, '#603450');
+    return gradient;
+}
+
+
 
 class Symbol {
     constructor(x, y, fontSize, canvasHeight, delay) {
@@ -99,7 +123,7 @@ class HeavyRainDrops {
 
         this.positions.push({ x: nextX, y: nextY });
 
-        context.fillStyle = this.getGradient(context, nextX * this.fontSize, nextY * this.fontSize);
+        context.fillStyle = this.getHeavyRainGradient(context, nextX * this.fontSize, nextY * this.fontSize);
         let text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
         context.fillText(text, nextX * this.fontSize, nextY * this.fontSize);
 
@@ -108,7 +132,7 @@ class HeavyRainDrops {
         }
     }
 
-    getGradient(context, x, y) {
+    getHeavyRainGradient(context, x, y) {
         let gradient = context.createLinearGradient(x, y, x, y + this.fontSize);
         gradient.addColorStop(0, '#6F8FAF');
         gradient.addColorStop(0.6, '#6495ED');
@@ -118,15 +142,86 @@ class HeavyRainDrops {
     }
 }
 
-const effect = new Effect(canvas.width, canvas.height);
-let lastTime = 0;
-const fps = 60;
-const nextFrame = 5000 / fps;
-let HeavyRainDroplets = [];
-let heavyrainTimer = 0;
-let heavyrainCooldown = Math.random() * 100 + 100; // Randomize between 10-20 seconds
+
+class LightningBolt {
+    constructor(x, y, fontSize, canvasHeight) {
+        this.characters = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンあぁいぃうぅえぇおぉかきくけこさしすせそたちつってとなにぬねのはひふへほまみむめもやゃゆゅよょらりるれろわゐをん0123456789";
+        this.x = x;
+        this.y = y;
+        this.fontSize = fontSize;
+        this.canvasHeight = canvasHeight;
+        this.finished = false; // To track when the lightning reaches the bottom
+        this.positions = [{ x: this.x, y: this.y }]; // Track the positions of the lightning
+    }
+
+    draw(context) {
+        if (this.finished) return;
+
+        let lastPos = this.positions[this.positions.length - 1];
+        let nextX = lastPos.x;
+        let nextY = lastPos.y + 2; // Move faster than the rain
+
+        // 1/10 chance to shift left or right
+        if (Math.random() < 0.9) {
+            nextX += (Math.random() < 0.5) ? -1 : 1;
+        }
+
+        // 1/20 chance to branch
+        if (Math.random() < 0.05) {
+            this.positions.push({ x: nextX, y: nextY }); // Create the branch
+        }
+
+        this.positions.push({ x: nextX, y: nextY });
+
+        context.fillStyle = this.getLightningGradient(context, nextX * this.fontSize, nextY * this.fontSize);
+        let text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+        context.fillText(text, nextX * this.fontSize, nextY * this.fontSize);
+
+        if (nextY * this.fontSize > this.canvasHeight) {
+            this.finished = true;
+        }
+    }
+
+    getLightningGradient(context, x, y) {
+        let gradient = context.createLinearGradient(x, y, x, y + this.fontSize);
+        gradient.addColorStop(0, '#DAA520');
+        gradient.addColorStop(1, '#D8A444');
+        return gradient;
+    }
+}
+
+
+//BEGIN ANIMATION FUNCTIONS
+function rainAnimation(timeStamp) {
+    //because this is the first animation run, this is the default color
+    let gradient = createRainGradient();
+
+
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+    if (timer > nextFrame) {
+        ctx.fillStyle = 'rgba(220,220,220,.2)'; // Silver background color
+        ctx.textAlign = 'center'; // Center the text horizontally
+        ctx.fillRect(0, 0, canvas.width, canvas.height); // Clear canvas with slight transparency
+        ctx.fillStyle = gradient;
+        ctx.font = effect.fontSize + 'px monospace';
+
+        effect.symbols.forEach(symbol => {
+            symbol.draw(ctx);
+        });
+
+        timer = 0;
+    } else {
+        timer += deltaTime;
+    }
+
+    animationId = requestAnimationFrame(rainAnimation);
+}
+
 
 function heavyRainAnimation(timeStamp) {
+    let gradient = createRainGradient();
+
     const deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
 
@@ -167,12 +262,96 @@ function heavyRainAnimation(timeStamp) {
 }
 
 
-//animationId = requestAnimationFrame(heavyRainAnimation);
+
+function heavyRainAnimation(timeStamp) {
+    let gradient = createRainGradient();
+
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+
+    if (timer > nextFrame) {
+        ctx.fillStyle = 'rgba(220,220,220,.2)';
+        ctx.textAlign = 'center';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = gradient;
+        ctx.font = effect.fontSize + 'px monospace';
+
+        effect.symbols.forEach(symbol => {
+            symbol.draw(ctx);
+        });
+
+        // Handle heavy rain drops
+        if (heavyrainTimer > heavyrainCooldown) {
+            HeavyRainDroplets.push(new HeavyRainDrops(Math.floor(Math.random() * effect.columns), 0, effect.fontSize, canvas.height));
+            heavyrainCooldown = Math.random() * 25 +25; // Reset cooldown
+            heavyrainTimer = 0;
+        } else {
+            heavyrainTimer += deltaTime;
+        }
+
+        HeavyRainDroplets.forEach((droplet, index) => {
+            droplet.draw(ctx);
+            if (droplet.finished) {
+                HeavyRainDroplets.splice(index, 1); // Remove finished heavy rain
+            }
+        });
+
+        timer = 0;
+    } else {
+        timer += deltaTime;
+    }
+
+    animationId = requestAnimationFrame(heavyRainAnimation);
+}
 
 
+function lightningAnimation(timeStamp) {
+    let gradient = createRainGradient();
 
-timer = 0
-function rainAnimation(timeStamp) {
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+
+    if (timer > nextFrame) {
+        ctx.fillStyle = 'rgba(220,220,220,.2)';
+        ctx.textAlign = 'center';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = gradient;
+        ctx.font = effect.fontSize + 'px monospace';
+
+        effect.symbols.forEach(symbol => {
+            symbol.draw(ctx);
+        });
+
+        // Handle heavy rain drops
+        if (lightningBoltTimer > lightningBoltCooldown) {
+            lightningBolts.push(new LightningBolt(Math.floor(Math.random() * effect.columns), 0, effect.fontSize, canvas.height));
+            lightningBoltCooldown = Math.random() * 50 + 50; // Reset cooldown
+            lightningBoltTimer = 0;
+        } else {
+            lightningBoltTimer += deltaTime;
+        }
+
+        // Draw and clean up lightning bolts
+        lightningBolts.forEach((bolt, index) => {
+            bolt.draw(ctx);
+            if (bolt.finished) {
+                lightningBolts.splice(index, 1); // Remove finished bolts
+            }
+        });
+
+        timer = 0;
+    } else {
+        timer += deltaTime;
+    }
+
+    animationId = requestAnimationFrame(lightningAnimation);
+}
+
+
+function lofiRainAnimation(timeStamp) {
+    let gradient = createLofiRainGradient();
+
+
     const deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
     if (timer > nextFrame) {
@@ -191,17 +370,31 @@ function rainAnimation(timeStamp) {
         timer += deltaTime;
     }
 
-    animationId = requestAnimationFrame(rainAnimation);
+    animationId = requestAnimationFrame(lofiRainAnimation);
 }
+
+
+
+timer = 0
+const effect = new Effect(canvas.width, canvas.height);
+let lastTime = 0;
+const fps = 60;
+const nextFrame = 5000 / fps;
+let HeavyRainDroplets = [];
+let heavyrainTimer = 0;
+let heavyrainCooldown = Math.random() * 25 + 25;
+let lightningBolts = [];
+let lightningBoltTimer = 0;
+let lightningBoltCooldown =  Math.random() * 50 + 50;
+
+
 
 animationId = requestAnimationFrame(rainAnimation); //this is the default rain animation
 
-// Event listeners for buttons...
-// (No changes needed here, so not repeating this part)
 
 
 
-
+////BEGIN EVENT LISTENERS
 // Event listener for the 'No Rain' button
 document.getElementById('none-animation').addEventListener('click', function () {
     console.log('stop')
@@ -231,15 +424,15 @@ document.getElementById('thunderstorm-animation').addEventListener('click', func
     console.log('thunderstorm')
     cancelAnimationFrame(animationId);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    animationId = requestAnimationFrame(rainAnimation);
+    animationId = requestAnimationFrame(lightningAnimation);
 });
 
-document.getElementById('heavy-rain-thunderstorm-animation').addEventListener('click', function () {
-    console.log('thunderstorm w/ heavy rain')
-    cancelAnimationFrame(animationId);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    animationId = requestAnimationFrame(heavyRainAnimation)
-});
+// document.getElementById('heavy-rain-thunderstorm-animation').addEventListener('click', function () {
+//     console.log('thunderstorm w/ heavy rain')
+//     cancelAnimationFrame(animationId);
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     animationId = requestAnimationFrame(heavyRainAnimation)
+// });
 
 
 // Event listener for the 'Thunderstorm' button
@@ -247,7 +440,7 @@ document.getElementById('lofi-rain-animation').addEventListener('click', functio
     console.log('lofi-rain')
     cancelAnimationFrame(animationId);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    animationId = requestAnimationFrame(rainAnimation);
+    animationId = requestAnimationFrame(lofiRainAnimation);
 });
 
 
@@ -256,6 +449,7 @@ document.getElementById('lofi-rain-animation').addEventListener('click', functio
 //For Music
 document.addEventListener("DOMContentLoaded", function () {
     const audioPlayer = document.getElementById('audio-player');
+    document.getElementById('audio-player').loop = true;
 
     // Function to play audio based on the selected option
     function playMusic(src) {
@@ -285,9 +479,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-
 window.addEventListener('resize',function(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     effect.resize(canvas.width, canvas.height)
 });
+
+
+
+
+
+// window.requestAnimationFrame = (function(){
+//     return  window.requestAnimationFrame       ||
+//             window.webkitRequestAnimationFrame ||
+//             window.mozRequestAnimationFrame    ||
+//             window.oRequestAnimationFrame      ||
+//             window.msRequestAnimationFrame     ||
+//             function (callback) {
+//                 window.setTimeout(callback, 1000 / 60);
+//             };
+// })();

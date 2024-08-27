@@ -7,11 +7,18 @@
 
 body{
     overflow: hidden;
+    background-color: "#DCDCDC";
     background: "#DCDCDC";
     /* background: "#F9F6EE"; */
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+      -o-user-select: none;
+     -ms-user-select: none;
+         user-select: none;
 }
 canvas{
-    background: "#DCDCDC";
+    background-color: "#DCDCDC";
     /* background: "#F9F6EE"; */
     position: block;
     top: 0;
