@@ -234,7 +234,7 @@ class LightningBolt {
 
             //Draw a line between positions
             context.strokeStyle = this.getLightningGradient(context, pos.x * this.fontSize, pos.y * this.fontSize);
-            context.lineWidth = this.fontSize / 3;
+            context.lineWidth = this.fontSize / 3 / 2;
             context.beginPath();
             context.moveTo(pos.x * this.fontSize, pos.y * this.fontSize);
             context.lineTo(nextPos.x * this.fontSize, nextPos.y * this.fontSize);
@@ -373,6 +373,33 @@ function lightningAnimation(timeStamp) {
     animationId = requestAnimationFrame(lightningAnimation);
 }
 
+function lofiRainAnimation(timeStamp) {
+    //because this is the first animation run, this is the default color
+    let gradient = createLofiRainGradient();
+
+
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+    if (timer > nextFrame) {
+        ctx.fillStyle = 'rgba(220,220,220,.2)'; // Silver background color
+        ctx.textAlign = 'center'; // Center the text horizontally
+        ctx.fillRect(0, 0, canvas.width, canvas.height); // Clear canvas with slight transparency
+        ctx.fillStyle = gradient;
+        ctx.font = effect.fontSize + 'px monospace';
+
+        effect.symbols.forEach(symbol => {
+            symbol.draw(ctx);
+        });
+
+        timer = 0;
+    } else {
+        timer += deltaTime;
+    }
+
+    animationId = requestAnimationFrame(lofiRainAnimation);
+}
+
+
 
 timer = 0
 const effect = new Effect(canvas.width, canvas.height);
@@ -394,6 +421,7 @@ animationId = requestAnimationFrame(rainAnimation); //this is the default rain a
 
 
 ////BEGIN EVENT LISTENERS
+
 // Event listener for the 'No Rain' button
 document.getElementById('none-animation').addEventListener('click', function () {
     console.log('stop')
