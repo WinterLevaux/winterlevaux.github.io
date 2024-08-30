@@ -526,3 +526,33 @@ window.addEventListener('resize',function(){
 //                 window.setTimeout(callback, 1000 / 60);
 //             };
 // })();
+
+
+//_________________________________________________________________________
+//Begin section about text
+function showContent(content) {
+    const contentBlock = document.getElementById('content-block');
+    contentBlock.classList.remove('hidden');
+
+    switch(content) {
+        case 'about':
+            contentBlock.innerHTML = '<p>This is the About Me content.</p>';
+            break;
+        case 'github':
+            contentBlock.innerHTML = '<p>This is the Github content.</p>';
+            break;
+        case 'resume':
+            contentBlock.innerHTML = '<p>This is the Resume content.</p>';
+            break;
+        case 'contact':
+            contentBlock.innerHTML = '<p>This is the Contact Me content.</p>';
+            break;
+        case 'misc':
+            contentBlock.innerHTML = '<p>This is the Misc content.</p>';
+            break;
+        default:
+            contentBlock.innerHTML = '';
+    }
+}
+
+

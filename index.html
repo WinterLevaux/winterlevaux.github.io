@@ -32,7 +32,17 @@
                 </div>
             </div>
         </div>
+        <div class="button-container">
+            <button class="content-button" onclick="showContent('about')">About Me</button>
+            <button class="content-button" onclick="showContent('github')">Github</button>
+            <button class="content-button" onclick="showContent('resume')">Resume</button>
+            <button class="content-button" onclick="showContent('contact')">Contact Me</button>
+            <button class="content-button" onclick="showContent('misc')">Misc</button>
+        </div>
+        <div id="content-block" class="hidden"></div>
     </div>
+
+
     <script src="script.js"></script>
     <!--  autoplay auto-->
     <audio id="audio-player"></audio>

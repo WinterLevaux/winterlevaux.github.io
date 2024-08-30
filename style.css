@@ -117,9 +117,59 @@ canvas{
     border-bottom: none;  /* Remove border from last item */
 }
 
-.dropdown-content a:hover {
-    background-color: #f1f1f1;
+
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%; /* Adjust the width as needed */
+    max-width: 1000px;
+    position: absolute;
+    top: 35%;
+    left: 50%; /* Position the left side of the container at the center of the page */
+    transform: translateX(-50%); /* Shift the container left by 50% of its width to center it */
+    margin: 0; /* No need for auto margins with absolute positioning */
+    z-index: 1;
 }
 
+.content-button {
+    align-items: center;
+    color: #3B3B3B;
+    background-color: transparent;
+    font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-weight: bold;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 0px 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    flex: 1;
+    margin: 0 0px;
+    z-index: 1;
+    white-space: nowrap; /* Prevents text from wrapping to a second line */
+    flex-shrink: 0; /* Prevents the button from shrinking smaller than its content */
+}
 
+#content-block {
+    font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    border: none;
+    margin-top: 0px; /* Space between the buttons and the content */
+    padding: 0px;
+    background-color: transparent;
+    font-weight: bold;
+    font-weight: 450;
+    width: 60%; /* Ensure the content block is centered and matches the width of the button container */
+    max-width: 600px;
+    text-align: center;
+    z-index: 1;
+    position: absolute;
+    top: 45%; /* Adjust this to position the content block correctly */
+    left: 50%;
+    transform: translateX(-50%);
+}
 
+.hidden {
+    display: none;
+}
