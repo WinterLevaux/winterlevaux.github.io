@@ -530,29 +530,33 @@ window.addEventListener('resize',function(){
 
 //_________________________________________________________________________
 //Begin section about text
+
+
 function showContent(content) {
     const contentBlock = document.getElementById('content-block');
     contentBlock.classList.remove('hidden');
 
     switch(content) {
         case 'about':
-            contentBlock.innerHTML = '<p>This is the About Me content.</p>';
+            contentBlock.innerHTML = '<p>Winter Levaux (they/she) is a current masters student at University of California Irvine, specializing in Bayesian Non-Parameterics. They received their undergraduate degree in Statistics from UCLA in 2021 and have worked at start-ups between graduating college and starting graduate school. They like to spend their time studying, practicing creative programming, learning more about the cyberpunk genre, and petting their cat Lyra. </p>';
             break;
         case 'github':
-            contentBlock.innerHTML = '<p>This is the Github content.</p>';
+            contentBlock.innerHTML = '<p>Go to my <a href="https://github.com/Winter-analysis" target=”_blank”>Github</a></p>';
             break;
         case 'resume':
-            contentBlock.innerHTML = '<p>This is the Resume content.</p>';
+            contentBlock.innerHTML = "<p>Go to my <a href='https://linkedin.com/in/winter-levaux' target=”_blank”>Linkedin</a> <br> Download my resume <a href='WinterLevaux_Resume.pdf' target='_blank'>here </p>";
             break;
         case 'contact':
-            contentBlock.innerHTML = '<p>This is the Contact Me content.</p>';
+            contentBlock.innerHTML = '<p style="monospace">School Email: <a href= "mailto:rlevaux@uci.edu">rlevaux@uci.edu</a> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Personal Email: <a href="mailto:winterlevaux@gmail.com"> winterlevaux@gmail.com</a> <br> Phone Number: (510)-912-7294&nbsp;&nbsp;&nbsp;&nbsp;</p>';
             break;
         case 'misc':
-            contentBlock.innerHTML = '<p>This is the Misc content.</p>';
+            contentBlock.innerHTML = '<p>...</p>';
             break;
         default:
             contentBlock.innerHTML = '';
     }
 }
+
+
 
 
