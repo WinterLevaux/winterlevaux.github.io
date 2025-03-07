@@ -538,7 +538,7 @@ function showContent(content) {
 
     switch(content) {
         case 'about':
-            contentBlock.innerHTML = '<p>Winter Levaux (they/she) is a current masters student at University of California Irvine, specializing in Bayesian Non-Parameterics. They received their undergraduate degree in Statistics from UCLA in 2021 and have worked at start-ups between graduating college and starting graduate school. They like to spend their time studying, practicing creative programming, learning more about the cyberpunk genre, and petting their cat Lyra. </p>';
+            contentBlock.innerHTML = '<p>Winter Levaux (they/she) is a current masters student of Statistics at University of California Irvine (UCI), specializing in Bayesian Non-Parameterics. They received their undergraduate degree in Statistics from UCLA in 2021 and have worked at start-ups between graduating college and starting graduate school. They like to spend their time studying, practicing creative programming, learning more about the cyberpunk genre, and petting their cat Lyra. </p>';
             break;
         case 'github':
             contentBlock.innerHTML = '<p>Go to my <a href="https://github.com/Winter-analysis" target=”_blank”>Github</a></p>';
