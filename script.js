@@ -547,7 +547,7 @@ function showContent(content) {
             contentBlock.innerHTML = "<p>Go to my <a href='https://linkedin.com/in/winter-levaux' target=”_blank”>Linkedin</a> <br> Download my resume <a href='WinterLevaux_Resume.pdf' target='_blank'>here </p>";
             break;
         case 'contact':
-            contentBlock.innerHTML = '<p style="monospace">School Email: <a href= "mailto:rlevaux@uci.edu">rlevaux@uci.edu</a> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Personal Email: <a href="mailto:winterlevaux@gmail.com"> winterlevaux@gmail.com</a> <br> Phone Number: (510)-912-7294&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+            contentBlock.innerHTML = '<p style="monospace">School Email: <a href= "mailto:wlevaux@uci.edu">wlevaux@uci.edu</a> <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Personal Email: <a href="mailto:winterlevaux@gmail.com"> winterlevaux@gmail.com</a> <br> Phone Number: (510)-912-7294&nbsp;&nbsp;&nbsp;&nbsp;</p>';
             break;
         case 'misc':
             contentBlock.innerHTML = '<p>...</p>';
